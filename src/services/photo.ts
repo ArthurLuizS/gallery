@@ -1,7 +1,7 @@
 import { Photo } from '../types/photo'
 import { storage } from '../libs/firebase'
-import {ref, listAll, getDownloadURL} from 'firebase/storage'
-import { url } from 'inspector'
+import {ref, listAll, getDownloadURL, uploadBytes} from 'firebase/storage'
+import {v4 as CreateId} from 'uuid'
 
 export const getAll =  async () => {
     let list: Photo[] = []
@@ -20,4 +20,20 @@ export const getAll =  async () => {
     }
 
     return list;
+}
+
+export const insert = async (file:File) => {
+    if(['image/png', 'image/jpeg', 'image/jpg'].includes(file.type)){
+
+        let randomName = CreateId();
+        let newFile = ref(storage, `images/${randomName}`);
+
+        let upload = await uploadBytes(newFile, file);
+        let photoUrl = await getDownloadURL(upload.ref);
+
+        return {name: upload.ref.name, url: photoUrl} as Photo;
+
+    }else{
+        return new Error ('Tipo de Arquivo não suportado')
+    }
 }
