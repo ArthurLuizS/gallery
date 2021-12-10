@@ -1,7 +1,8 @@
 import * as C from './styles'
-import {useState, useEffect} from 'react'
+import {useState, useEffect, FormEvent} from 'react'
 import * as Photos from './services/photo'
 import {Photo} from './types/photo'
+import { PhotoItem } from './components/PhotoItem'
 
 const App = () =>{
   const [loading, setLoading] = useState(false)
@@ -15,7 +16,12 @@ const App = () =>{
     }
     getPhotos();
   }, [])
+  
+  const handleFormSubmit = (e : FormEvent<HTMLFormElement>) =>{
+    e.preventDefault();
 
+    
+  }
   return (
     <C.Container> 
         <C.Area>
@@ -23,6 +29,11 @@ const App = () =>{
 
 
           {/* Area de upload */}
+          <C.UploadForm method="POST" onSubmit={handleFormSubmit}>
+            <input type="file" name= "image"/>
+            <input type="submit" name="enviar" />
+          </C.UploadForm>
+
 
 
           {/* Lista das Fotos */}
@@ -37,7 +48,7 @@ const App = () =>{
           {!loading && photos.length > 0 &&
             <C.PhotoList>
               {photos.map((item, index) =>(
-                <div> {item.name} </div>
+               <PhotoItem key={index} url={item.url} name={item.name} />
               ))}
             </C.PhotoList>
           } 
